@@ -1,0 +1,28 @@
+version: "3"
+services:
+  db:
+    container_name: pg-dev
+    image: pg-dev:1.0
+    build: .
+    working_dir: "/mnt/host"
+    volumes:
+      - .:/mnt/host       # for visibility of pg-logs
+      - ../:/mnt/projects # for visibility of other projects
+      - pg-dev-data:/var/lib/postgresql/data
+      # For DOCKER server so we can access vesta share
+      # - /mnt/systems:/mnt/systems
+      - /node-dev:/mnt/systems
+    ports:
+      - "5438:5438"
+    environment:
+      - POSTGRES_PASSWORD=Pgd3v
+      - POSTGRES_USER=master
+      - PGPORT=5438
+    restart: unless-stopped
+    command: >
+      postgres
+      -c log_destination=csvlog
+      -c logging_collector=on
+      -c log_directory='/mnt/host/pg-log'
+volumes:
+  pg-dev-data:
